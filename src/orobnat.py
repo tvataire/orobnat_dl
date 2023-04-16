@@ -174,11 +174,15 @@ class Report(Mapping):
         if len(blocks) < 1:
             raise InvalidReportException(html)
 
-        data = [re.sub(r'<td>(.*?)</td>', 'r\1', td.get_text()) for td in blocks[0].find_all('td')]
+        data = [re.sub(r'<td>(.*?)</td>', r'\1', td.get_text()) for td in blocks[0].find_all('td')]
         try:
-            self.__mapping['date du prélèvement'] = datetime.strptime(data[0], '%d/%m/%Y %Hh%M')
+            self.__mapping['date du prélèvement'] = datetime.strptime(data[0].strip(), '%d/%m/%Y %Hh%M')
         except ValueError:
-            self.__mapping['date du prélèvement'] = datetime.strptime(data[0], '%d/%m/%Y ')
+            try:
+                self.__mapping['date du prélèvement'] = datetime.strptime(data[0].strip(), '%d/%m/%Y %H:%M')
+            except ValueError:
+                self.__mapping['date du prélèvement'] = datetime.strptime(re.sub(r'(\d+/\d+/\d+).*', r'\1',
+                                                                                 data[0].strip()), '%d/%m/%Y')
         self.__mapping['commune de prélèvement'] = data[1]
         self.__mapping['installation'] = data[2]
         self.__mapping['service public de distribution'] = data[3]
