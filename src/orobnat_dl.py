@@ -63,7 +63,7 @@ def main():
                             action='store_true')
         parser.add_argument('--format', help='Sélectionner le format d\'export.\nDéfault : {}'.format(
             DEFAULT_EXPORT_FORMAT), nargs='*', choices=EXPORT_FORMATS.keys(),
-                            default=DEFAULT_EXPORT_FORMAT)
+                            default=[DEFAULT_EXPORT_FORMAT])
         regions = session.regions
         region = parser.add_argument('--region',
                                      help='Sélectionner une région : \n{}'.format('\n'.join(['{}: {}'.format(key, value)

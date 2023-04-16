@@ -204,12 +204,12 @@ class ReportIterator(Iterator):
         :param session: An orobnat.Session instance.
         :param payload: dict : Payload for the POST requests, derived from payload_base.
         """
-        self._session = session
+        self.__session = session
         self.__payload = payload
 
     def __next__(self):
         try:
-            result = self._session.dl_report(self.__payload)
+            result = self.__session.dl_report(self.__payload)
             self.__payload['posPLV'] += 1
         except InvalidReportException:
             raise StopIteration
