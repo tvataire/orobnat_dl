@@ -229,7 +229,6 @@ class ExportStrategy(ABC):
         :param export_dir_path: The directory path where to export reports
         """
         self._export_dir_path = export_dir_path
-        os.makedirs(self._export_dir_path, exist_ok=True)
 
     @property
     @abstractmethod
@@ -265,8 +264,9 @@ class HTMLStrategy(ExportStrategy):
     def export(self, report):
         export_dir_path = os.path.join(self._export_dir_path, report['date du prélèvement'].strftime('%Y'))
         os.makedirs(export_dir_path, exist_ok=True)
-        with open(os.path.join(export_dir_path, '{}.{}'.format(report['date du prélèvement'].strftime('%Y-%m-%d'),
-                                                               self.suffix)), 'w') as d:
+        with open(os.path.join(export_dir_path,
+                               '{}.{}'.format(report['date du prélèvement'].strftime('%Y-%m-%d_%H%M%S'),
+                                              self.suffix)), 'w') as d:
             d.write(report['html'])
 
 
