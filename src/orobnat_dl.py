@@ -5,6 +5,7 @@ import traceback
 from logger import logger
 from orobnat import ReportExporter, HTMLStrategy, PDFStrategy, Session, ReportIterator
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentError, SUPPRESS
+from datetime import datetime
 
 EXPORT_FORMATS = {'PDF': PDFStrategy, 'HTML': HTMLStrategy}
 DEFAULT_EXPORT_FORMAT = list(EXPORT_FORMATS.keys())[0]
@@ -25,7 +26,7 @@ def dl_reports(session, **kwargs):
                 'communeDepartement': kwargs['commune'],
                 'reseau': kwargs['reseau']}
 
-    for report in ReportIterator(session, req_data):
+    for report in ReportIterator(session, req_data, since=kwargs['since']):
         logger.info('Export report : {}'.format(report['date du prélèvement']))
         exporter.export(report)
 
@@ -64,6 +65,8 @@ def main():
         parser.add_argument('--format', help='Sélectionner le format d\'export.\nDéfault : {}'.format(
             DEFAULT_EXPORT_FORMAT), nargs='*', choices=EXPORT_FORMATS.keys(),
                             default=[DEFAULT_EXPORT_FORMAT])
+        since = parser.add_argument('--since', help='Download reports since provided date. '
+                                                    'Date format must be a valid ISO 8601 format.', metavar='DATE')
         regions = session.regions
         region = parser.add_argument('--region',
                                      help='Sélectionner une région : \n{}'.format('\n'.join(['{}: {}'.format(key, value)
@@ -94,6 +97,11 @@ def main():
         logger.debug('Parsed args : {}'.format(args))
         if args.dry_run:
             args.format.clear()
+        if None is not args.since:
+            try:
+                args.since = datetime.fromisoformat(args.since)
+            except ValueError as ve:
+                raise parser.error(ve)
         d_args = vars(args)
         # update session with command-line arguments
         s_args.update(d_args)

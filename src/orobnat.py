@@ -203,13 +203,14 @@ class ReportIterator(Iterator):
     """
     Iterate over all reports for a given "region", "departement", "commune" and "reseau".
     """
-    def __init__(self, session, payload):
+    def __init__(self, session, payload, since=None):
         """
         :param session: An orobnat.Session instance.
         :param payload: dict : Payload for the POST requests, derived from payload_base.
         """
         self.__session = session
         self.__payload = payload
+        self.__since = since
 
     def __next__(self):
         try:
@@ -217,6 +218,9 @@ class ReportIterator(Iterator):
             self.__payload['posPLV'] += 1
         except InvalidReportException:
             raise StopIteration
+        if None is not self.__since:
+            if result['date du prélèvement'] < self.__since:
+                raise StopIteration
         return result
 
 
