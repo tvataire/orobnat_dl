@@ -70,7 +70,7 @@ def main():
                                                                                              for key, value in
                                                                                              regions.items()])),
                                      choices=regions.keys(), metavar='ID')
-        # --liste-departementsn, --liste-communes, --liste-reseaux are mutually exclusive.
+        # --liste-departements, --liste-communes, --liste-reseaux are mutually exclusive.
         group = parser.add_mutually_exclusive_group()
         departements = group.add_argument('--liste-departements',
                                           help='Afficher la liste des départements disponibles pour la région '
